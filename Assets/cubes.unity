@@ -251,11 +251,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 556296018}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3992f32f66391ac4b833abd6498781fd, type: 3}
+  m_Script: {fileID: 11500000, guid: 79f220701b4b1ff4b90671d8f4042301, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 365632362}
   textureAtlas: {fileID: 2100000, guid: 0beff685461bd4744bc433ab1599a347, type: 2}
+  lastbuildPos: {x: 0, y: 0, z: 0}
 --- !u!4 &556296020
 Transform:
   m_ObjectHideFlags: 0
