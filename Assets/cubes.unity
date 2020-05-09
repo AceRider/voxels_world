@@ -127,13 +127,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1493944296}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &365632367 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 400000, guid: 5e9e851c0e142814dac026a256ba2ac0,
-    type: 3}
-  m_PrefabInstance: {fileID: 1493944296}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &365632368
+--- !u!114 &365632363
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -142,10 +136,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 365632362}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a79f7c1d9576e2f458e0a9a4919709b0, type: 3}
+  m_Script: {fileID: 11500000, guid: b3d51e710c356554ab6c5e71fd3421e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 893939624}
+--- !u!4 &365632367 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400000, guid: 5e9e851c0e142814dac026a256ba2ac0,
+    type: 3}
+  m_PrefabInstance: {fileID: 1493944296}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &369530929
 GameObject:
   m_ObjectHideFlags: 0
@@ -264,15 +264,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 556296018}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fec2cd394ff05c546b76ffec27bbf9f7, type: 3}
+  m_Script: {fileID: 11500000, guid: 2c10236da6604dc49a7f38050ab3b67e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 365632362}
   textureAtlas: {fileID: 2100000, guid: 0beff685461bd4744bc433ab1599a347, type: 2}
-  loadingAmount: {fileID: 0}
-  cam: {fileID: 0}
-  playButton: {fileID: 0}
-  lastBuildTime: 0
+  fluidTexture: {fileID: 0}
   lastbuildPos: {x: 0, y: 0, z: 0}
 --- !u!4 &556296020
 Transform:
