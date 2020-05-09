@@ -5,7 +5,7 @@ using UnityEditor;
 using System.IO;
 
 public class ProcessTextureAtlas : AssetPostprocessor {
-
+    /*
     static List<string> uvs = new List<string>();
 
     void OnPreprocessTexture ()
@@ -74,5 +74,5 @@ public class ProcessTextureAtlas : AssetPostprocessor {
         textureImporter.spritesheet = metas.ToArray();
         WriteUVs();
     }
- 
+ */
 }

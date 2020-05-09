@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityStandardAssets.CrossPlatformInput;
 using UnityEngine.UI;
-
 //change GUITexture to Image
 [RequireComponent(typeof(Image))]
 public class ForcedReset : MonoBehaviour

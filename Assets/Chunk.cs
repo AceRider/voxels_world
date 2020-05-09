@@ -50,7 +50,7 @@ public class Chunk {
 
 	bool Load() //read data from file
 	{
-		string chunkFile = BuildChunkFileName(chunk.transform.position);
+		/*string chunkFile = BuildChunkFileName(chunk.transform.position);
 		if(File.Exists(chunkFile))
 		{
 			BinaryFormatter bf = new BinaryFormatter();
@@ -60,13 +60,13 @@ public class Chunk {
 			file.Close();
 			//Debug.Log("Loading chunk from file: " + chunkFile);
 			return true;
-		}
+		}*/
 		return false;
 	}
 
 	public void Save() //write data to file
 	{
-		string chunkFile = BuildChunkFileName(chunk.transform.position);
+		/*string chunkFile = BuildChunkFileName(chunk.transform.position);
 		
 		if(!File.Exists(chunkFile))
 		{
@@ -76,7 +76,8 @@ public class Chunk {
 		FileStream file = File.Open(chunkFile, FileMode.OpenOrCreate);
 		bd = new BlockData(chunkData);
 		bf.Serialize(file, bd);
-		file.Close();
+		file.Close();*/
+		//Debug.Log("Saving chunk from file: " + chunkFile);
 	}
 
 	void BuildChunk()
@@ -127,14 +128,15 @@ public class Chunk {
 						chunkData[x,y,z] = new Block(Block.BlockType.GRASS, pos, 
 						                chunk.gameObject, this);
 					}
-					else if(worldY < surfaceHeight)
-						chunkData[x,y,z] = new Block(Block.BlockType.DIRT, pos, 
-						                chunk.gameObject, this);
 					else
 					{
 						chunkData[x,y,z] = new Block(Block.BlockType.AIR, pos, 
 						                chunk.gameObject, this);
 					}
+
+					if(worldY < 70 && chunkData[x, y, z].bType == Block.BlockType.AIR)
+						chunkData[x,y,z] = new Block(Block.BlockType.WATER, pos, 
+						                chunk.gameObject, this);
 
 					status = ChunkStatus.DRAW;
 

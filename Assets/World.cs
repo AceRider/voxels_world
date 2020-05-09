@@ -12,9 +12,9 @@ public class World : MonoBehaviour {
 	public Material textureAtlas;
 	public Material fluidTexture;
 	public static int columnHeight = 16;
-	public static int chunkSize = 16;
+	public static int chunkSize = 8;
 	public static int worldSize = 1;
-	public static int radius = 2;
+	public static int radius = 3;
 	public static uint maxCoroutines = 1000;
 	public static ConcurrentDictionary<string, Chunk> chunks;
 	public static List<string> toRemove = new List<string>();
@@ -41,33 +41,22 @@ public class World : MonoBehaviour {
 
 	public static Block GetWorldBlock(Vector3 pos)
 	{
-		int cx, cy, cz;
+		int cx = (int) (Mathf.Round(pos.x)/(float)chunkSize) * chunkSize;
+		int cy = (int) (Mathf.Round(pos.y)/(float)chunkSize) * chunkSize;
+		int cz = (int) (Mathf.Round(pos.z)/(float)chunkSize) * chunkSize;
 
-		if (pos.x < 0)
-			cx = (int)((Mathf.Round(pos.x - chunkSize) + 1) / (float)chunkSize) * chunkSize;
-		else
-			cx = (int)(Mathf.Round(pos.x) / (float)chunkSize) * chunkSize;
+		int blx = (int) (Mathf.Round(pos.x) - cx);
+		int bly = (int) (Mathf.Round(pos.y) - cy);
+		int blz = (int) (Mathf.Round(pos.z) - cz);
 
-		if (pos.y < 0)
-			cy = (int)((Mathf.Round(pos.y - chunkSize) + 1) / (float)chunkSize) * chunkSize;
-		else
-			cy = (int)(Mathf.Round(pos.y) / (float)chunkSize) * chunkSize;
-
-		if (pos.z < 0)
-			cz = (int)((Mathf.Round(pos.z - chunkSize) + 1) / (float)chunkSize) * chunkSize;
-		else
-			cz = (int)(Mathf.Round(pos.z) / (float)chunkSize) * chunkSize;
-
-		int blx = (int)Mathf.Abs((float)Mathf.Round(pos.x) - cx);
-		int bly = (int)Mathf.Abs((float)Mathf.Round(pos.y) - cy);
-		int blz = (int)Mathf.Abs((float)Mathf.Round(pos.z) - cz);
-
-		string cn = BuildChunkName(new Vector3(cx, cy, cz));
+		string cn = BuildChunkName(new Vector3(cx,cy,cz));
 		Chunk c;
-		if (chunks.TryGetValue(cn, out c))
+		Debug.Log("World Hit: " + pos);
+		Debug.Log("Chunk Hit: " + cn);
+		Debug.Log("Block " + blx + " " + bly + " " + blz);
+		if(chunks.TryGetValue(cn, out c))
 		{
-
-			return c.chunkData[blx, bly, blz];
+			return c.chunkData[blx,bly,blz];
 		}
 		else
 			return null;
