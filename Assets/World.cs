@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,7 +22,7 @@ public class World : MonoBehaviour {
 
 	float startTime;
 
-	CoroutineQueue queue;
+	public static CoroutineQueue queue;
 
 	public Vector3 lastbuildPos;
 
@@ -62,7 +61,7 @@ public class World : MonoBehaviour {
 			return null;
 	}
 
-	void BuildChunkAt(int x, int y, int z)
+	public void BuildChunkAt(int x, int y, int z)
 	{
 		Vector3 chunkPosition = new Vector3(x*chunkSize, 
 											y*chunkSize, 
@@ -80,7 +79,7 @@ public class World : MonoBehaviour {
 		}
 	}
 
-	IEnumerator BuildRecursiveWorld(int x, int y, int z, int startrad, int rad)
+	public IEnumerator BuildRecursiveWorld(int x, int y, int z, int startrad, int rad)
 	{
 		int nextrad = rad-1;
 		if(rad <= 0 || y < 0 || y > columnHeight) yield break;

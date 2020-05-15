@@ -36,6 +36,7 @@ public class Chunk {
 	public ChunkMB mb;
 	BlockData bd;
 	public bool changed = false;
+	bool treesCreated = false;
 
 	string BuildChunkFileName(Vector3 v)
 	{
@@ -50,7 +51,7 @@ public class Chunk {
 
 	bool Load() //read data from file
 	{
-		/*string chunkFile = BuildChunkFileName(chunk.transform.position);
+		string chunkFile = BuildChunkFileName(chunk.transform.position);
 		if(File.Exists(chunkFile))
 		{
 			BinaryFormatter bf = new BinaryFormatter();
@@ -60,13 +61,13 @@ public class Chunk {
 			file.Close();
 			//Debug.Log("Loading chunk from file: " + chunkFile);
 			return true;
-		}*/
+		}
 		return false;
 	}
 
 	public void Save() //write data to file
 	{
-		/*string chunkFile = BuildChunkFileName(chunk.transform.position);
+		string chunkFile = BuildChunkFileName(chunk.transform.position);
 		
 		if(!File.Exists(chunkFile))
 		{
@@ -76,8 +77,24 @@ public class Chunk {
 		FileStream file = File.Open(chunkFile, FileMode.OpenOrCreate);
 		bd = new BlockData(chunkData);
 		bf.Serialize(file, bd);
-		file.Close();*/
+		file.Close();
 		//Debug.Log("Saving chunk from file: " + chunkFile);
+	}
+
+	public void UpdateChunk()
+	{
+		for(int z = 0; z < World.chunkSize; z++)
+			for(int y = 0; y < World.chunkSize; y++)
+				for(int x = 0; x < World.chunkSize; x++)
+				{
+					if(chunkData[x,y,z].bType == Block.BlockType.SAND)
+					{
+						mb.StartCoroutine(mb.Drop(chunkData[x,y,z], 
+										Block.BlockType.SAND, 
+										20));
+					}
+				}
+
 	}
 
 	void BuildChunk()
@@ -88,7 +105,7 @@ public class Chunk {
 		chunkData = new Block[World.chunkSize,World.chunkSize,World.chunkSize];
 		for(int z = 0; z < World.chunkSize; z++)
 			for(int y = 0; y < World.chunkSize; y++)
-				for(int x = 0; x < World.chunkSize; x++)
+				for(int x = 0; x < World.chunkSize; x++)	
 				{
 					Vector3 pos = new Vector3(x,y,z);
 					int worldX = (int)(x + chunk.transform.position.x);
@@ -105,13 +122,11 @@ public class Chunk {
 
 					int surfaceHeight = Utils.GenerateHeight(worldX,worldZ);
 					
-					if(Utils.fBM3D(worldX, worldY, worldZ, 0.1f, 3) < 0.42f)
-						chunkData[x,y,z] = new Block(Block.BlockType.AIR, pos, 
-						                chunk.gameObject, this);
-					else if(worldY == 0)
+					
+					if(worldY == 0)
 						chunkData[x,y,z] = new Block(Block.BlockType.BEDROCK, pos, 
 						                chunk.gameObject, this);
-					else if(worldY <= Utils.GenerateStoneHeight(worldX,worldZ))
+					/*else if(worldY <= Utils.GenerateStoneHeight(worldX,worldZ))
 					{
 						if(Utils.fBM3D(worldX, worldY, worldZ, 0.01f, 2) < 0.4f && worldY < 40)
 							chunkData[x,y,z] = new Block(Block.BlockType.DIAMOND, pos, 
@@ -122,26 +137,45 @@ public class Chunk {
 						else
 							chunkData[x,y,z] = new Block(Block.BlockType.STONE, pos, 
 						                chunk.gameObject, this);
-					}
+					}*/
 					else if(worldY == surfaceHeight)
 					{
-						chunkData[x,y,z] = new Block(Block.BlockType.GRASS, pos, 
+						if(Utils.fBM3D(worldX, worldY, worldZ, 0.4f, 2) < 0.4f)
+						{
+							if(worldY > 70)
+								chunkData[x,y,z] = new Block(Block.BlockType.PINEBASE, pos, 
+						                chunk.gameObject, this);
+							else
+								chunkData[x,y,z] = new Block(Block.BlockType.WOODBASE, pos, 
+						                chunk.gameObject, this);
+						}
+						else if (Utils.fBM3D(worldX, worldY, worldZ, 0.1f, 2) < 0.5f)
+							chunkData[x,y,z] = new Block(Block.BlockType.SAND, pos, 
+						                chunk.gameObject, this);
+						else
+							chunkData[x,y,z] = new Block(Block.BlockType.GRASS, pos, 
 						                chunk.gameObject, this);
 					}
+					else if(worldY < surfaceHeight)
+						chunkData[x,y,z] = new Block(Block.BlockType.DIRT, pos, 
+						                chunk.gameObject, this);
+					else if(worldY < 50)
+						chunkData[x,y,z] = new Block(Block.BlockType.WATER, pos, 
+						                fluid.gameObject, this);
 					else
 					{
 						chunkData[x,y,z] = new Block(Block.BlockType.AIR, pos, 
 						                chunk.gameObject, this);
 					}
 
-					if(worldY < 70 && chunkData[x, y, z].bType == Block.BlockType.AIR)
-						chunkData[x,y,z] = new Block(Block.BlockType.WATER, pos, 
+					if(chunkData[x,y,z].bType != Block.BlockType.WATER && Utils.fBM3D(worldX, worldY, worldZ, 0.1f, 3) < 0.42f)
+						chunkData[x,y,z] = new Block(Block.BlockType.AIR, pos, 
 						                chunk.gameObject, this);
+
 
 					status = ChunkStatus.DRAW;
 
 				}
-
 	}
 
 	public void Redraw()
@@ -157,6 +191,16 @@ public class Chunk {
 
 	public void DrawChunk()
 	{
+		if(!treesCreated)
+		{
+			for(int z = 0; z < World.chunkSize; z++)
+				for(int y = 0; y < World.chunkSize; y++)
+					for(int x = 0; x < World.chunkSize; x++)
+					{
+						BuildTrees(chunkData[x,y,z],x,y,z);
+					}
+			treesCreated = true;		
+		}
 		for(int z = 0; z < World.chunkSize; z++)
 			for(int y = 0; y < World.chunkSize; y++)
 				for(int x = 0; x < World.chunkSize; x++)
@@ -169,6 +213,82 @@ public class Chunk {
 
 		CombineQuads(fluid.gameObject, fluidMaterial);
 		status = ChunkStatus.DONE;
+	}
+
+	void BuildPineTree(Block trunk, int x, int y, int z)
+	{
+		Block t = trunk.GetBlock(x, y+1, z);
+		if(t != null)
+		{
+			t.SetType(Block.BlockType.PINE);		
+		    Block t1 = t.GetBlock(x, y+2, z);
+		    if(t1 != null)
+		    {
+			    t1.SetType(Block.BlockType.PINE);
+
+				for(int i = -1; i <= 1; i++)
+					for(int j = -1; j <= 1; j++)
+						for(int k = 3; k <= 4; k++)
+					{
+						Block t2 = trunk.GetBlock(x+i, y+k, z+j);
+
+						if(t2 != null)
+						{
+							t2.SetType(Block.BlockType.PINELEAVES);
+						}
+						else return;
+					}
+				Block t3 = t1.GetBlock(x, y+5, z);
+				if(t3 != null)
+				{
+					t3.SetType(Block.BlockType.PINELEAVES);
+				}
+			}
+		}
+	}
+	
+	void BuildTree(Block trunk, int x, int y, int z)
+	{
+		Block t = trunk.GetBlock(x, y+1, z);
+		if(t != null)
+		{
+			t.SetType(Block.BlockType.WOOD);		
+		    Block t1 = t.GetBlock(x, y+2, z);
+		    if(t1 != null)
+		    {
+			    t1.SetType(Block.BlockType.WOOD);
+
+				for(int i = -1; i <= 1; i++)
+					for(int j = -1; j <= 1; j++)
+						for(int k = 3; k <= 4; k++)
+					{
+						Block t2 = trunk.GetBlock(x+i, y+k, z+j);
+
+						if(t2 != null)
+						{
+							t2.SetType(Block.BlockType.LEAVES);
+						}
+						else return;
+					}
+				Block t3 = t1.GetBlock(x, y+5, z);
+				if(t3 != null)
+				{
+					t3.SetType(Block.BlockType.LEAVES);
+					Block t4 = t3.GetBlock(x, y+1, z);
+					if(t4 != null)
+						t4.SetType(Block.BlockType.LEAVES);
+				}
+			}
+		}
+	}
+
+	void BuildTrees(Block trunk, int x, int y, int z)
+	{
+		if(trunk.bType == Block.BlockType.WOODBASE)
+			BuildTree(trunk,x,y,z);
+
+		else if(trunk.bType == Block.BlockType.PINEBASE)
+			BuildPineTree(trunk,x,y,z);
 	}
 
 	public Chunk(){}

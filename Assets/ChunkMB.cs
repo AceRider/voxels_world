@@ -24,6 +24,32 @@ public class ChunkMB: MonoBehaviour
 			owner.chunkData[x,y,z].Reset();
 	}
 
+	public IEnumerator Drop(Block b, Block.BlockType bt, int maxdrop)
+	{
+		Block thisBlock = b;
+		Block prevBlock = null;
+		for(int i = 0; i < maxdrop; i++)
+		{
+			Block.BlockType previousType = thisBlock.bType;
+			if(previousType != bt)
+				thisBlock.SetType(bt);
+			if(prevBlock != null)
+				prevBlock.SetType(previousType);
+
+			prevBlock = thisBlock;
+			b.owner.Redraw();
+			
+			yield return new WaitForSeconds(0.2f);
+			Vector3 pos = thisBlock.position;
+			
+			thisBlock = thisBlock.GetBlock((int)pos.x,(int)pos.y-1,(int)pos.z);
+			if(thisBlock.isSolid)
+			{	
+				yield break;
+			}
+		}
+	}
+
 	public IEnumerator Flow(Block b, Block.BlockType bt, int strength, int maxsize)
 	{
 		//reduce the strenth of the fluid block
@@ -53,21 +79,24 @@ public class ChunkMB: MonoBehaviour
 			--strength;
 			--maxsize;
 			//flow left
-			StartCoroutine(Flow(b.GetBlock(x-1,y,z),bt,strength,maxsize));
+			World.queue.Run(Flow(b.GetBlock(x-1,y,z),bt,strength,maxsize));
 			yield return new WaitForSeconds(1);
 
 			//flow right
-			StartCoroutine(Flow(b.GetBlock(x+1,y,z),bt,strength,maxsize));
+			World.queue.Run(Flow(b.GetBlock(x+1,y,z),bt,strength,maxsize));
 			yield return new WaitForSeconds(1);
 
 			//flow forward
-			StartCoroutine(Flow(b.GetBlock(x,y,z+1),bt,strength,maxsize));
+			World.queue.Run(Flow(b.GetBlock(x,y,z+1),bt,strength,maxsize));
 			yield return new WaitForSeconds(1);
 
 			//flow back
-			StartCoroutine(Flow(b.GetBlock(x,y,z-1),bt,strength,maxsize));
+			World.queue.Run(Flow(b.GetBlock(x,y,z-1),bt,strength,maxsize));
 			yield return new WaitForSeconds(1);
 		}
+
+
+		
 	}
 
 	void SaveProgress()
